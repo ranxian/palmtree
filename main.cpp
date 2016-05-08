@@ -174,6 +174,7 @@ void bench() {
 
 // Populate a palm tree with @entry_count entries
 void populate_palm_tree(palmtree::PalmTree<int, int> *palmtreep, size_t entry_count) {
+  LOG(INFO) << "Begin populate palm tree with " << entry_count << "entries";
   int *buff = new int[entry_count];
   for(size_t i = 0; i < entry_count; i++) {
     buff[i] = i;
@@ -181,6 +182,7 @@ void populate_palm_tree(palmtree::PalmTree<int, int> *palmtreep, size_t entry_co
 
   std::random_shuffle(buff, buff + entry_count);
 
+  double bt = CycleTimer::currentSeconds();
   for(size_t j = 0; j < entry_count; j++) {
     // auto kv = buff[j];
     palmtreep->insert(2 * j, 2 * j);
@@ -190,6 +192,9 @@ void populate_palm_tree(palmtree::PalmTree<int, int> *palmtreep, size_t entry_co
 
   // Wait for task finished
   palmtreep->wait_finish();
+  double passed = CycleTimer::currentSeconds() - bt;
+  double thput = entry_count / passed / 1024;
+  LOG(INFO) << "Populated " << entry_count << " keys in " << passed << " secs, thruput: " << thput;
 }
 
 
@@ -515,7 +520,7 @@ int main(int argc, char *argv[]) {
   contention_ratio = atof(argv[4]);
 
 
-  auto insert = 1024 * 512 * 100;
+  auto insert = 1024 * 512 * 10;
   auto op_num = 1024 * 1024 * 100;
   // readonly_uniform(insert, op_num, c);
   if(r) {
