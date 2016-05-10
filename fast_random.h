@@ -1,14 +1,4 @@
-//
-// Created by Zrs_y on 5/4/16.
-//
-#include <iostream>
-#include <stx/btree_map.h>
-#include <glog/logging.h>
-#include <iostream>
-#include <cstdlib>
-#include <time.h>
-#include <unistd.h>
-#include "../CycleTimer.h"
+#pragma once
 
 class fast_random {
 public:
@@ -63,27 +53,3 @@ private:
 
   unsigned long seed;
 };
-
-
-void readonly_bench(size_t entry_count, size_t read_count) {
-
-  LOG(INFO) << "Running std map";
-  stx::btree_map<int, int> map;
-  for (size_t i = 0; i < entry_count; i++)
-    map.insert(std::make_pair(i, i));
-
-  fast_random rng(time(0));
-  auto start = CycleTimer::currentSeconds();
-  for (size_t i = 0; i < read_count; i++) {
-    int rand_key = rng.next_u32() % entry_count;
-    map.find(rand_key);
-  }
-  auto end = CycleTimer::currentSeconds();
-  LOG(INFO) << "stx map run for " << end-start << "s, " << "thput:" << std::fixed << read_count/(end-start)/1000 << " K rps";
-
-}
-
-int main() {
-  readonly_bench(1024*512, 1024*1024*10);
-  return 0;
-}

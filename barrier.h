@@ -6,6 +6,28 @@
 
 #include <boost/atomic.hpp>
 
+class spinlock {
+public:
+  spinlock() {
+    next_ticket = 0;
+    now_serving = 0;
+  }
+
+  void lock() {
+    auto my_ticket = next_ticket++;
+    while(my_ticket != now_serving) ;
+  }
+
+  void unlock() {
+    now_serving++;
+  }
+
+private:
+  std::atomic<unsigned int> next_ticket;
+  std::atomic<unsigned int> now_serving;
+};
+
+
 class Barrier {
 public:
   Barrier() = delete;
@@ -36,27 +58,6 @@ public:
   }
 
 private:
-  class spinlock {
-  public:
-    spinlock() {
-      next_ticket = 0;
-      now_serving = 0;
-    }
-
-    void lock() {
-      auto my_ticket = next_ticket++;
-      while(my_ticket != now_serving) ;
-    }
-
-    void unlock() {
-      now_serving++;
-    }
-
-  private:
-    std::atomic<unsigned int> next_ticket;
-    std::atomic<unsigned int> now_serving;
-  };
-
   spinlock lock;
   std::atomic<int> m_count;
   std::atomic<unsigned long> m_generation;

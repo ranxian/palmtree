@@ -15,7 +15,6 @@
 #include <atomic>
 #include <glog/logging.h>
 #include "immintrin.h"
-// #include "smmintrin.h"
 #include "CycleTimer.h"
 #include "barrier.h"
 #include <jemalloc/jemalloc.h>
@@ -1677,6 +1676,10 @@ namespace palmtree {
 
     int batch_size() {
       return BATCH_SIZE_PER_WORKER * NUM_WORKER;
+    }
+
+    void print_stat() {
+      STAT.print_stat();
     }
 
     // Wait until all task finished
